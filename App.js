@@ -1,8 +1,9 @@
-import React, {useEffect} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
+  View
 } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated,{ 
@@ -11,59 +12,55 @@ import Animated,{
   withSpring,
   useAnimatedGestureHandler
  } from 'react-native-reanimated';
+ import { createStackNavigator } from '@react-navigation/stack';
+ import Signin from './src/screens/Signin';
+import Signup from './src/screens/Signup';
+import { NavigationContainer } from '@react-navigation/native';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+
+const Tab = createMaterialBottomTabNavigator();
+
+function MyTabs() {
+  return (
+    <Tab.Navigator>
+      {/* <Tab.Screen name="Home" component={HomeScreen} />
+      <Tab.Screen name="Settings" component={SettingsScreen} /> */}
+    </Tab.Navigator>
+  );
+}
 
 
+ const AuthStack = createStackNavigator();
+
+ function MyAuthStack() {
+  return (
+    <AuthStack.Navigator>
+      <AuthStack.Screen 
+        name="Signin" 
+        component={Signin} 
+        options={{
+          headerShown: false
+        }}
+      />
+      <AuthStack.Screen 
+        name="Signup" 
+        component={Signup} 
+        options={{
+          headerShown: false
+        }}
+      />
+    </AuthStack.Navigator>
+  );
+}
 
 const App = () => {
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const animatedStyles = useAnimatedStyle(() => ({
-    transform: [{ translateX: translateX.value }, { translateY: translateY.value }],
-  }));
-  
-  const eventHandler = useAnimatedGestureHandler({
-    onStart: (event, ctx) => {
-     console.log("taping");
-    },
-    onActive: (event, ctx) => {
-      translateX.value = event.translationX;
-      translateY.value = event.translationY;
-    },
-    onEnd: (event, ctx) => {
-    
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
-    },
-  });
-
-  useEffect(()=>{
-    setTimeout(()=>{
-      translateX.value = withSpring(100);
-      translateY.value = withSpring(100);
-    },2000)
-
-  },[])
+ 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text>INSTAGRAM</Text>
-      <PanGestureHandler onGestureEvent={eventHandler}>
-        <Animated.View style={[styles.dot, animatedStyles]}/>
-      </PanGestureHandler>
-    </SafeAreaView>
+     <NavigationContainer>
+       <MyAuthStack/>
+     </NavigationContainer>
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  dot: {
-    width:50,
-    height:50,
-    borderRadius: 30,
-    backgroundColor: 'purple'
-  }
-});
 
 export default App;
